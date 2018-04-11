@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>BLOGS</h1>
+    <form method='post'>
+        <label>
+            Title:
+            <input type="text" name='post' />
+        </label>
+
+        <label>
+            Entry:
+            <input type="text" name="new_post" />
+        </label>
+
+        <input type="submit" value='Add Entry' />
+    </form>
+
+    <hr />
+
+    {% if posts|length == 0 %}
+    <p>No post yet</p>
+    {% else %}
+
+        <ul>
+            {% for post in posts %}
+            <ol>{{post}}</ol>
+            {% endfor %}
+        </ul>
+
+    {% endif %}
+    {% endblock %}
