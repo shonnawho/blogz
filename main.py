@@ -1,10 +1,17 @@
 from flask import Flask, redirect, render_template, request
+import os
+import jinja2
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
 app.config['DEBUG'] = True
 #app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://build-a-blog:launchcode@localhost:8889/build-a-blog'
 #app.config['SQLALCHEMY_ECHO'] = True
+
+template_dir = os.path.join(os.path.dirname(__file__),'templates')
+jinja_env = jinja2.Environment(loader = jinja2.FileSystemLoader(template_dir), autoescape=True)
+
+
 
 #db = SQLAlchemy(app)
 
@@ -21,27 +28,41 @@ app.config['DEBUG'] = True
 
 
     #Main route
-posts = []
+
 
 
 @app.route('/', methods=['POST','GET'])
 def index():
 
-    if request.method == 'POST':
-        post = request.form['post']
-        posts.append(post)
+    blog_body= ''
+    blog_title = ''
 
-    return render_template('newpost.html',title="Build-a-Blog", posts=posts)
+    if request.method == 'POST':
+        post = request.form['blog_title','blog_body']
+        
+    return render_template('newpost.html',title="Build-a-Blog", blog_body="blog_body",blog_title="blog_title")
+
+
+
+    #else:
+        
+        #return redirect('/blog?posts{0}'.format(posts))
+
+
+
+
+
+
+
 
 #@app.route('/blog', methods=['POST', 'GET'])
-#def
+#def blog():
+    #post = request.args.get('posts')
+    
+    #return render_template ('blog.html', posts=posts)
 
 
-# new post template
-#@app.route('/newpost', methods=['POST', 'GET'])
-#def newpost_valid():
 
-    #return render_template('newpost.html')
 
     #if __name__ == '__main__':
 app.run()

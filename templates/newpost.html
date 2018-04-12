@@ -1,17 +1,22 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1>BLOGS</h1>
+    <h1>{{title}}</h1>
     <form method='post'>
-        <label>
-            Title:
-            <input type="text" name='post' />
-        </label>
 
         <label>
-            Entry:
-            <input type="text" name="new_post" />
+            Title of Post
+        <br>
+            <input type="text" name="blog_title" />
         </label>
+        <br>
+
+        <label>
+            Enter Text
+        <br>
+        <textarea name="blog_body" rows="10" cols="20"></textarea>
+        </label>
+        <br>
 
         <input type="submit" value='Add Entry' />
     </form>
@@ -24,7 +29,7 @@
 
         <ul>
             {% for post in posts %}
-            <ol>{{post}}</ol>
+            <li>{{post}}</li>
             {% endfor %}
         </ul>
 
