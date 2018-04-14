@@ -5,65 +5,70 @@ from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
 app.config['DEBUG'] = True
-#app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://build-a-blog:launchcode@localhost:8889/build-a-blog'
-#app.config['SQLALCHEMY_ECHO'] = True
-
-template_dir = os.path.join(os.path.dirname(__file__),'templates')
-jinja_env = jinja2.Environment(loader = jinja2.FileSystemLoader(template_dir), autoescape=True)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://build-a-blog:launchcode@localhost:8889/build-a-blog'
+app.config['SQLALCHEMY_ECHO'] = True
 
 
-
-#db = SQLAlchemy(app)
+db = SQLAlchemy(app)
 
 
 #class for database
-#class Blog(db.Model):
+class Blog(db.Model):
 
-    #id = db.Column(db.Integer,primary_key=True)
-    #title = db.Cloumn(db.String(200))
-    #body = db.Cloumn(db.String(500))
+    id = db.Column(db.Integer,primary_key=True)
+    title = db.Column(db.String(120))
+    body = db.Column(db.String(500))
 
-    #def __init__(self,post)
-    #self.post = post
-
-
-    #Main route
+    def __init__(self,title,body):
+        self.title = title
+        self.body = body
 
 
+    
 
-@app.route('/', methods=['POST','GET'])
-def index():
+
+
+
+
+@app.route('/newpost', methods=['POST','GET'])
+def newpost():
 
     blog_body= ''
-    blog_title = ''
-
-    if request.method == 'POST':
-        post = request.form['blog_title','blog_body']
-        
-    return render_template('newpost.html',title="Build-a-Blog", blog_body="blog_body",blog_title="blog_title")
-
-
-
-    #else:
-        
-        #return redirect('/blog?posts{0}'.format(posts))
-
-
-
-
-
-
-
-
-#@app.route('/blog', methods=['POST', 'GET'])
-#def blog():
-    #post = request.args.get('posts')
+    blog_title = '' 
     
-    #return render_template ('blog.html', posts=posts)
+    if request.method == 'POST':
+        blog_body = request.form['blog_body']
+        blog_title = request.form['blog_title']
+
+        #blog = [blog_title, blog_body]
+
+    
+        return redirect("/blog")
+    else:
+        
+        
+        return render_template('newpost.html', title='Blogs', blog_body=blog_body,blog_title=blog_title)
 
 
 
 
-    #if __name__ == '__main__':
-app.run()
+
+
+
+
+
+@app.route('/blog', methods=['POST','GET'])
+def blog():
+    if request.method == 'POST':
+        
+        blog_body = request.form['blog_body']
+        blog_title = request.form['blog_title']
+    
+        return render_template('blog.html', blog_title=blog_title,blog_body=blog_body)
+
+
+
+if __name__ == '__main__':
+
+    app.run()
  

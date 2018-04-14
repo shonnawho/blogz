@@ -1,6 +1,27 @@
-<!doctype html>
-    <html>
-         <body>
-            <h1>{{blog_title,blog_body}}</h1> 
-        </body>
-</html>     
+{% extends "base.html" %}
+    
+        {% block content %}
+
+            <h1>{{blog_title}}</h1> 
+            <p>{{blog_body}}</p>
+
+
+
+            {% if blog_title|length == 0 %}
+            <p>No post yet</p>
+
+            {% else %}
+
+            
+           <h2> {{blog_title}}</h2>
+           <h3>{{blog_body}}</h3>
+
+
+            
+
+        
+
+            {% endif %}
+        {% endblock %}
+       
+    
