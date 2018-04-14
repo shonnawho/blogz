@@ -2,9 +2,8 @@
     
         {% block content %}
 
-            <h1>{{blog_title}}</h1> 
-            <p>{{blog_body}}</p>
-
+            
+<!-- blog.html is a GET request -->
 
 
             {% if blog_title|length == 0 %}
@@ -13,8 +12,8 @@
             {% else %}
 
             
-           <h2> {{blog_title}}</h2>
-           <h3>{{blog_body}}</h3>
+           <h1> {{blog_title}}</h1>
+           <p>{{blog_body}}</p>
 
 
             

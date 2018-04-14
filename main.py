@@ -39,15 +39,17 @@ def newpost():
     if request.method == 'POST':
         blog_body = request.form['blog_body']
         blog_title = request.form['blog_title']
-
+        return render_template('newpost.html', title='Blogs', blog_body=blog_body,blog_title=blog_title)
         #blog = [blog_title, blog_body]
 
     
-        return redirect("/blog")
+        #return redirect("/blog")
     else:
         
         
-        return render_template('newpost.html', title='Blogs', blog_body=blog_body,blog_title=blog_title)
+        return render_template('newpost.html')
+
+#submit the 
 
 
 
@@ -56,6 +58,7 @@ def newpost():
 
 
 
+#returning the information that is the Newpost form
 
 @app.route('/blog', methods=['POST','GET'])
 def blog():
@@ -63,8 +66,13 @@ def blog():
         
         blog_body = request.form['blog_body']
         blog_title = request.form['blog_title']
-    
+        
+        #returns the blog.html with the title and the body
         return render_template('blog.html', blog_title=blog_title,blog_body=blog_body)
+
+    #else:
+
+        #if 
 
 
 
