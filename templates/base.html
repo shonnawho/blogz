@@ -6,6 +6,17 @@
 
     <body>
 
+        <div>
+            <a href="/newpost">Add a Blog Entry</a>
+            <br>
+            <a href= "/blog"> Main Blog Page</a>
+        </div>
+
+         <!--   {% with messages = get_flashed_messages() %}
+                {% for messages in messages %}
+                {% endfor %}
+            {% endwith %} -->
+
         {% block content %}
         {% endblock %}
     </body>

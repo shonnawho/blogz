@@ -1,26 +1,21 @@
 {% extends "base.html" %}
-    
-        {% block content %}
+{% block content %}
 
             
 <!-- blog.html is a GET request -->
+        {% if blog_list|length == 0 %}
+        <p>No post yet</p>
 
+        {% else %}
 
-            {% if blog_title|length == 0 %}
-            <p>No post yet</p>
-
-            {% else %}
-
-            
-           <h1> {{blog_title}}</h1>
-           <p>{{blog_body}}</p>
-
-
-            
-
-        
-
-            {% endif %}
-        {% endblock %}
-       
-    
+        {% for blogs in blog_list %}
+                 <li>
+                        <a href="/blog?id={{blogs.id}}" >
+                        <h1>{{blogs.title}}</h1></a> 
+                        {{blogs.body}} <!-- where you are calling the object -->
+                        
+                </li>
+          
+        {% endfor %} 
+        {% endif %}  
+{% endblock %}
