@@ -25,10 +25,10 @@ class Blog(db.Model):
         self.body = body
         
 
- @app.route('/')
-def index():
-    blog_page = request.args.get('')
-    return redirect('/blog')
+#  app.route('/')
+#def index():
+   # blog_page = request.args.get('')
+    #return redirect('/blog')
     
 @app.route('/newpost', methods=['POST','GET'])
 def newpost():

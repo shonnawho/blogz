@@ -6,16 +6,20 @@
         {% if blog_list|length == 0 %}
         <p>No post yet</p>
 
+        <!--{% if blog_list == blogs.id %} -->
+
+
+
         {% else %}
 
-        {% for blogs in blog_list %}
+                {% for blogs in blog_list %}
                  <li>
                         <a href="/blog?id={{blogs.id}}" >
-                        <h1>{{blogs.title}}</h1></a> 
-                        {{blogs.body}} <!-- where you are calling the object -->
-                        
+                        <h1>{{blogs.title}}</h1
+                        ></a> 
+                        {{blogs.body}} 
                 </li>
           
-        {% endfor %} 
+                {% endfor %} 
         {% endif %}  
 {% endblock %}
