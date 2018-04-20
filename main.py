@@ -20,50 +20,84 @@ class Blog(db.Model):
     title = db.Column(db.String(120))
     body = db.Column(db.String(500))
 
-    def __init__(self,title,body,blog):
+    def __init__(self,title,body):
         self.title = title
         self.body = body
         
 
-#  app.route('/')
+#app.route('/')
 #def index():
-   # blog_page = request.args.get('')
+
     #return redirect('/blog')
-    
+
+
 @app.route('/newpost', methods=['POST','GET'])
 def newpost():
 
-    blog_body= ''
-    blog_title = '' 
-    
-    if request.method == 'POST':
 
+    if request.method == 'POST':
+        
         blog_body = request.form['blog_body']
         blog_title = request.form['blog_title']
-        
-        return render_template('newpost.html', title='Blogs', blog_body=blog_body,blog_title=blog_title)
-        
-    else:
-        
-        
-        return render_template('newpost.html', title="Blogs")
+        title_error = ''
+        body_error = ''
 
+
+        if len (blog_body) < 1:
+            body_error = 'Must have content!'
+
+
+        if len (blog_title) < 1:
+            title_error = 'Must have content!'
+
+        if not body_error and not title_error:
+        
+            new_blog = Blog(blog_title, blog_body)
+            db.session.add(new_blog)
+            db.session.commit()
+            url = '/blog?id=' + str(new_blog.id)
+            return redirect(url)
+
+        else:
+            return render_template('newpost.html',body_error=body_error,title_error=title_error)
+
+    else:
+
+        return render_template('newpost.html')
 
 @app.route('/blog', methods=['POST', 'GET'])
-def blog():
-    
-    if request.method == 'POST':
-        
-        blog_body = request.form['blog_body']
-        blog_title = request.form['blog_title']
-        new_blog = Blog(blog_title, blog_body,blog)
-        db.session.add(new_blog)
-        db.session.commit()
-        #request.args.get('blog_list')
+def blog(): 
 
-    blog_list = Blog.query.filter_by().all()
-    return render_template('blog.html',blog_list=blog_list)
-    
+    if request.args:
+        blog_id = request.args.get("id")
+        blog = Blog.query.get(blog_id)
+        return render_template('single_post.html',blog=blog)
+
+
+    else:
+        blog_list = Blog.query.all()
+
+        return render_template('blog.html',blog_list=blog_list)
+
+    #@app.route('/single_post')
+    #def view():
+
+    #return redirect('/blog?id={blog.id}')
+
+    #else:
+          
+            
+           # single_post = request.args.get['id']
+            #single_blog = Blog.query.filter_by().first()
+
+        #return render_template('/single_post.html')
+            
+      #      single_post = Blog.query.filter_by().first()
+        #single_post = request.args.get('id')
+       # return render_template('single_post.html', single_post=single_post, title="Post")
+        
+
+
 
 if __name__ == '__main__':
 

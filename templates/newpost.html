@@ -1,13 +1,14 @@
 {% extends "base.html" %}
 <!--  newpost is a POST request -->
 {% block content %}
-    <h1>{{title}}</h1>
-    <form action='/blog', method="POST">
+    <h1>Add a Blog </h1>
+    <form action='/newpost', method="POST">
 
         <label>
             Title of Post
         <br>
             <input type="text" name="blog_title" />
+            <span class="error">{{title_error}} </span>
         </label>
         <br>
 
@@ -15,6 +16,7 @@
             Enter Text
         <br>
         <textarea name="blog_body" rows="10" cols="20"></textarea>
+        <span class="error">{{body_error}} </span>
         </label>
         <br>
 
