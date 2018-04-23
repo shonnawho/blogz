@@ -110,88 +110,51 @@ def blog():
 def signup():
 
     if request.method == 'POST':
-        
-        
         username = request.form['username']
         password = request.form['password']
         password_verify = request.form['password_verify']
         user = User.query.filter_by(username=username).first()
 
-        password_error = ''
-        username_error = ''
-        password_verify_erorr=''
+        username_error=''
+        password_error=''
+        password_verify_error=''
 
-        #if username and password and password_verify:
-           # new_user = User(username,password)
-            #db.session.add(new_user)
-            #db.session.commit()
-            #return redirect('/newpost')
-       # else:
-            #return render_template('/signup.html')
-
-        # if username or password or password_verify = '':
-          #  username_error = 'Invalid'
-           ## password_error = 'Invalid'
-            #assword_verify_erorr = 'Invalid'
+        #Adds a new user to the database
+        if not user and len(password) > 3 and password == password_verify:
+            new_user = User(username, password)
+            db.session.add(new_user)
+            db.session.commit()
+            session['username'] = username            
+            return redirect('/newpost')
+        else:
 
 
+            #leave username,password field empty
+            if username == '' or password == '' or verify_pw == '':
+                username_error ='please enter valid username'
+                password_error = 'Please enter valid password'
+                password_verify_error = "please enter valid password"
+
+
+                #if username already exist
+            existing_user = User.query.filter_by(username=username).first()
+                
+            if not existing_user:
+                new_user = User(username, password)
+                db.session.add(new_user)
+                db.session.commit()
+                return redirect ('/newpost')
+
+
+            else:
+                return "<h1>Duplicate user</h1>"
 
 
 
-
-
-        #checks to see if username already exist
-        #existing_user = User.query.filter_by(username=username).first()
-        #if not existing_user:
-         #   new_user = User(username,password)
-          #  db.session.add(new_user)
-           # db.session.commit()
-
-
-
-
-
-        #add new user to database
-        #if not user and len(password) > 3 and password == verify_pw:
-         #   new_user = User(username, password)
-          #  db.session.add(new_user)
-           # db.session.commit()
-            #session['username'] = username
-        #return redirect('/newpost')
-
-        if len(username) < 3:
-            username_error = 'Invaild username'
-
-        if len(password_input) < 3:
-            password_error = 'Invaild password'
-
-        if password != password_verify:
-           password_verify_error = 'Passwords do not match'
-
-        if username_error or password_error or email_error:
-            
-            password_input = ''
-            password_verify = ''
-            username = username
-        return render_template('signup_form.html', username=username, password_error=password_error, username_error=username_error, password_input=password_input,
-             password_verify_error=password_verify_error)
-             
-        #else:
-            
-            
-            #return redirect ('/newpost')
-        
-
-    
-    
-    
-        
+                        
+                
             
 
-        
-            
-            
-        #return render_template("/signup.html")
 
 
 
@@ -207,7 +170,7 @@ def login():
         username_error = ''
 
 
-        if username and user.password == password:
+        if user and user.password == password: #checks if the user exist and with the match passwords
             session['username'] = username
             return redirect('/newpost')
 
@@ -216,13 +179,12 @@ def login():
         if username and not user.password == password:
             session['username'] = username
             return redirect('/login')
-            flash('Password is incorrect')
+            
 
         if not username and not password:
             
             return redirect('/signup')
-            flash('Create account!!')
-
+            
     else:
         
         return render_template('login.html')
