@@ -1,17 +1,18 @@
-from flask import Flask, redirect, render_template, request, flash
+from flask import Flask, redirect, render_template, request, flash, session
 import os
 import jinja2
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
 app.config['DEBUG'] = True
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://build-a-blog:launchcode@localhost:8889/build-a-blog'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://blogz:launchcode@localhost:8889/blogz'
 app.config['SQLALCHEMY_ECHO'] = True
+db = SQLAlchemy(app)
 app.secret_key = 's1i9r8p6'
 
 
 
-db = SQLAlchemy(app)
+
 
 #class for database
 class Blog(db.Model):
@@ -19,10 +20,29 @@ class Blog(db.Model):
     id = db.Column(db.Integer,primary_key=True)
     title = db.Column(db.String(120))
     body = db.Column(db.String(500))
+    owner_id = db.Column(db.Integer,db.ForeignKey('user.id'))
 
-    def __init__(self,title,body):
+    def __init__(self,title,body,owner_id):
         self.title = title
         self.body = body
+        self.owner_id = owner_id
+
+
+#db = SQLAlchemy(app)
+
+#User class
+
+class User(db.Model):
+
+    id = db.Column(db.Integer,primary_key=True)
+    username = db.Column(db.String(60))
+    password = db.Column(db.String(60))
+    blogs = db.relationship('Blog',backref='user')
+
+
+    def __init__(self,username, password):
+        self.username = username
+        self.password = password
         
 
 #app.route('/')
@@ -39,6 +59,9 @@ def newpost():
         
         blog_body = request.form['blog_body']
         blog_title = request.form['blog_title']
+        username = request.form['username']
+
+
         title_error = ''
         body_error = ''
 
@@ -65,6 +88,8 @@ def newpost():
 
         return render_template('newpost.html')
 
+
+
 @app.route('/blog', methods=['POST', 'GET'])
 def blog(): 
 
@@ -79,23 +104,147 @@ def blog():
 
         return render_template('blog.html',blog_list=blog_list)
 
-    #@app.route('/single_post')
-    #def view():
 
-    #return redirect('/blog?id={blog.id}')
+#signup handler
+@app.route('/signup', methods= ['POST','GET'])
+def signup():
 
-    #else:
-          
-            
-           # single_post = request.args.get['id']
-            #single_blog = Blog.query.filter_by().first()
-
-        #return render_template('/single_post.html')
-            
-      #      single_post = Blog.query.filter_by().first()
-        #single_post = request.args.get('id')
-       # return render_template('single_post.html', single_post=single_post, title="Post")
+    if request.method == 'POST':
         
+        
+        username = request.form['username']
+        password = request.form['password']
+        password_verify = request.form['password_verify']
+        user = User.query.filter_by(username=username).first()
+
+        password_error = ''
+        username_error = ''
+        password_verify_erorr=''
+
+        #if username and password and password_verify:
+           # new_user = User(username,password)
+            #db.session.add(new_user)
+            #db.session.commit()
+            #return redirect('/newpost')
+       # else:
+            #return render_template('/signup.html')
+
+        # if username or password or password_verify = '':
+          #  username_error = 'Invalid'
+           ## password_error = 'Invalid'
+            #assword_verify_erorr = 'Invalid'
+
+
+
+
+
+
+
+        #checks to see if username already exist
+        #existing_user = User.query.filter_by(username=username).first()
+        #if not existing_user:
+         #   new_user = User(username,password)
+          #  db.session.add(new_user)
+           # db.session.commit()
+
+
+
+
+
+        #add new user to database
+        #if not user and len(password) > 3 and password == verify_pw:
+         #   new_user = User(username, password)
+          #  db.session.add(new_user)
+           # db.session.commit()
+            #session['username'] = username
+        #return redirect('/newpost')
+
+        if len(username) < 3:
+            username_error = 'Invaild username'
+
+        if len(password_input) < 3:
+            password_error = 'Invaild password'
+
+        if password != password_verify:
+           password_verify_error = 'Passwords do not match'
+
+        if username_error or password_error or email_error:
+            
+            password_input = ''
+            password_verify = ''
+            username = username
+        return render_template('signup_form.html', username=username, password_error=password_error, username_error=username_error, password_input=password_input,
+             password_verify_error=password_verify_error)
+             
+        #else:
+            
+            
+            #return redirect ('/newpost')
+        
+
+    
+    
+    
+        
+            
+
+        
+            
+            
+        #return render_template("/signup.html")
+
+
+
+
+@app.route('/login', methods=['POST', 'GET'])
+def login():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        user = User.query.filter_by(username=username).first()
+
+        password_error = ''
+        username_error = ''
+
+
+        if username and user.password == password:
+            session['username'] = username
+            return redirect('/newpost')
+
+            
+            
+        if username and not user.password == password:
+            session['username'] = username
+            return redirect('/login')
+            flash('Password is incorrect')
+
+        if not username and not password:
+            
+            return redirect('/signup')
+            flash('Create account!!')
+
+    else:
+        
+        return render_template('login.html')
+
+                
+                
+        
+
+
+
+
+
+#@app.route()
+#def index():
+
+#handles a POST and redirects to /blog after the user deletes the user name
+#@app.route()
+#def logout():
+    
+
+
+
 
 
 
