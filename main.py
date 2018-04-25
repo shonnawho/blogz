@@ -1,4 +1,4 @@
-from flask import Flask, redirect, render_template, request, flash, session
+from flask import Flask, redirect, render_template, request, session
 import os
 import jinja2
 from flask_sqlalchemy import SQLAlchemy
@@ -44,11 +44,47 @@ class User(db.Model):
         self.username = username
         self.password = password
         
+@app.before_request
+def require_login():
+    allowed_routes = ['login','blog_list','index', 'signup']
+    if request.endpoint not in allowed_routes and 'username' not in session:
+        return redirect ('/login')
 
-#app.route('/')
-#def index():
 
-    #return redirect('/blog')
+
+@app.route('/login', methods=['POST', 'GET'])
+def login():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        user = User.query.filter_by(username=username).first()
+
+        password_error = ''
+        username_error = ''
+        
+        if (not user):
+            username_error = "that username doesn't exist"
+            return render_template('login.html', username_error=username_error)
+
+        if user and user.password == password: #checks if the user exist and with the match passwords
+            session['username'] = username
+            return redirect('/newpost')
+
+            
+            
+        if user and not user.password == password:
+            session['username'] = username
+            return redirect('/login')
+            
+
+        if not username and not user.password == password:
+            return redirect('/signup')
+            
+    else:
+        
+        return render_template('login.html')
+
+
 
 
 @app.route('/newpost', methods=['POST','GET'])
@@ -74,21 +110,19 @@ def newpost():
             title_error = 'Must have content!'
 
         if not body_error and not title_error:
-        
-            new_blog = Blog(blog_title, blog_body)
+            owner = User.query.filter_by(username=username).first()
+            new_blog = Blog(blog_title, blog_body,owner)
             db.session.add(new_blog)
             db.session.commit()
-            url = '/blog?id=' + str(new_blog.id)
+            url = '/blog?id=' + str(new_blog.id)           
             return redirect(url)
 
         else:
-            return render_template('newpost.html',body_error=body_error,title_error=title_error)
+            return render_template('newpost.html', owner=owner, body_error=body_error,title_error=title_error)
 
     else:
 
         return render_template('newpost.html')
-
-
 
 @app.route('/blog', methods=['POST', 'GET'])
 def blog(): 
@@ -108,86 +142,60 @@ def blog():
 #signup handler
 @app.route('/signup', methods= ['POST','GET'])
 def signup():
+    if request.method == 'GET':
+        return render_template('signup.html')
 
-    if request.method == 'POST':
+    else:
         username = request.form['username']
         password = request.form['password']
         password_verify = request.form['password_verify']
-        user = User.query.filter_by(username=username).first()
-
+        
         username_error=''
         password_error=''
         password_verify_error=''
 
+        existing_user = User.query.filter_by(username=username).first()
+        
+        if (existing_user):
+            username_error = 'that username is already being used'
+            return render_template('signup.html', username_error)
+
         #Adds a new user to the database
-        if not user and len(password) > 3 and password == password_verify:
+        if (len(password) > 3 and password == password_verify):
             new_user = User(username, password)
             db.session.add(new_user)
             db.session.commit()
             session['username'] = username            
             return redirect('/newpost')
-        else:
 
+        else:        
+            if username == '' or len(username) < 3:
+                username_error ='Not a valid username.  Usernames should be at least 3 chars.'
 
-            #leave username,password field empty
-            if username == '' or password == '' or verify_pw == '':
-                username_error ='please enter valid username'
+            if password == '' or password_verify == '' or len(password) < 3:
                 password_error = 'Please enter valid password'
                 password_verify_error = "please enter valid password"
 
+            return render_template('signup.html',username_error=username_error,
+                            password_error=password_error,password_verify_error=password_verify_error)        
 
-                #if username already exist
-            existing_user = User.query.filter_by(username=username).first()
-                
-            if not existing_user:
-                new_user = User(username, password)
-                db.session.add(new_user)
-                db.session.commit()
-                return redirect ('/newpost')
+                    
+            if existing_user:
+                username_error = 'Username already exist!'
 
+            if password != password_verify:
+                password_verify_error = 'Passwords do not match!'
+                return redirect('/signup.html',password_verify_error=password_verify_error)
 
             else:
-                return "<h1>Duplicate user</h1>"
+                if not password_verify_error and not username_error:
+                    
+                    return redirect('/newpost')
 
-
-
-                        
-                
-            
-
-
-
-
-
-@app.route('/login', methods=['POST', 'GET'])
-def login():
-    if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
-        user = User.query.filter_by(username=username).first()
-
-        password_error = ''
-        username_error = ''
-
-
-        if user and user.password == password: #checks if the user exist and with the match passwords
-            session['username'] = username
-            return redirect('/newpost')
-
-            
-            
-        if username and not user.password == password:
-            session['username'] = username
-            return redirect('/login')
-            
-
-        if not username and not password:
-            
-            return redirect('/signup')
-            
-    else:
         
-        return render_template('login.html')
+
+
+
 
                 
                 
@@ -197,18 +205,16 @@ def login():
 
 
 
-#@app.route()
-#def index():
+@app.route('/')
+def index():
+    users = User.query.all()
+    return render_template('index.html', users=users)
 
 #handles a POST and redirects to /blog after the user deletes the user name
-#@app.route()
-#def logout():
-    
-
-
-
-
-
+@app.route('/logout', methods = ['POST','GET'])
+def logout():
+    del session['username']
+    return redirect('/login')
 
 if __name__ == '__main__':
 
