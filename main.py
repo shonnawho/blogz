@@ -76,7 +76,8 @@ def login():
             
         if user and not user.password == password:
             session['username'] = username
-            return redirect('/login')
+            password_error = " Password do not match our records"
+            return render_template('/login.html',password_error=password_error)
             
 
         if not username and not user.password == password:
@@ -91,6 +92,7 @@ def login():
 def newpost():
 
     if request.method == 'GET':
+    
         return render_template('newpost.html', title="Add a Blog Entry")
 
     if request.method == 'POST':
@@ -98,8 +100,7 @@ def newpost():
             
         blog_body = request.form['blog_body']
         blog_title = request.form['blog_title']
-        
-        owner= User.query.filter_by(username=username).first()
+        owner= User.query.filter_by(username=session['username']).first()
 
 
         title_error = ''
@@ -175,14 +176,16 @@ def signup():
             return render_template('signup.html', username_error=username_error)
 
         #Adds a new user to the database
-        if (len(password) > 3 and password == password_verify):
+        if len(password) > 3 and password == password_verify:
             new_user = User(username, password)
             db.session.add(new_user)
             db.session.commit()
             session['username'] = username            
             return redirect('/newpost')
-
-        else:        
+        
+        else:
+            
+            
             if username == '' or len(username) < 3:
                 username_error ='Not a valid username.  Usernames should be at least 3 chars.'
 
@@ -190,7 +193,7 @@ def signup():
                 password_error = 'Please enter valid password'
                 password_verify_error = "please enter valid password"
 
-            return render_template('signup.html',username_error=username_error,
+                return render_template('signup.html',username_error=username_error,
                             password_error=password_error,password_verify_error=password_verify_error)        
 
                     
@@ -198,13 +201,19 @@ def signup():
                 username_error = 'Username already exist!'
 
             if password != password_verify:
+                
                 password_verify_error = 'Passwords do not match!'
-                return render_template('newpost.html',password_verify_error=password_verify_error)
-
+                return render_template('/signup.html',password_verify_error=password_verify_error)
+            
             else:
+                
                 if not password_verify_error and not username_error:
                     
-                    return redirect('/signup.html')
+                    return redirect('/newpost')
+    else:
+        
+        return render_template("/signup.html")
+
 
         
 

@@ -8,12 +8,20 @@
                 <td>
                     <input name="username" type="text" value="{{username}}">
                 </td>
+            
+                <td>
+                    <span class="error">{{username_error}}</span>
+                </td>
             </tr>
             <tr>
                 <td><label for="password">Password</label></td>
                 <td>
                     <input name="password" type="password">
                 </td>
+                <td>
+                    <span class="error">{{password_error}}</span>
+                </td>
+            </tr>
             </tr>
         </table>
         <input type="submit">
