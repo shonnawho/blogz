@@ -1,25 +1,23 @@
 <!doctype html>
 <html>
     <head>
-        <title>{{title}}</title>
+        <title>{{title}}
+        </title>
     </head>
 
     <body>
 
         <div>
-            <a href="/newpost">Add a Blog Entry</a>
+            <a href= "/blog">All Post</a>
             <br>
-            <a href= "/blog"> Main Blog Page</a>
+            <a href="/newpost">New Post</a>
+            <br>
+            <a href="/">Home</a>
             <br> 
             <a href="/login">Login</a>
             <br>
             <a href="/logout">Logout</a>
         </div>
-
-         <!--   {% with messages = get_flashed_messages() %}
-                {% for messages in messages %}
-                {% endfor %}
-            {% endwith %} -->
 
         {% block content %}
         {% endblock %}

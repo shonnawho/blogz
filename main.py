@@ -65,7 +65,7 @@ def login():
         username_error = ''
         
         if (not user):
-            username_error = "that username doesn't exist"
+            username_error = "Username doesn't exist"
             return render_template('login.html', username_error=username_error)
 
         if user and user.password == password: #checks if the user exist and with the match passwords
@@ -76,7 +76,7 @@ def login():
             
         if user and not user.password == password:
             session['username'] = username
-            password_error = " Password do not match our records"
+            password_error = " Password does not match our records"
             return render_template('/login.html',password_error=password_error)
             
 
